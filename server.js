@@ -44,7 +44,7 @@ app.post('/api/notes', (req, res) => {
     if (title && text) {
         // Variable for the object we will save
         const newNote = {
-            note_id: uuid(),
+            id: uuid(),
             title,
             text,
 
