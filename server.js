@@ -4,7 +4,7 @@ const fs = require('fs');
 // Helper method for generating unique ids
 const uuid = require('./helpers/uuid');
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 
@@ -21,7 +21,7 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
 
-// GET request for reviews --------------------------------------------------------------------------
+// GET request for notes --------------------------------------------------------------------------
 app.get('/api/notes', (req, res) => {
     // Send DB to the client
     res.sendFile(path.join(__dirname, './db/db.json'))
@@ -31,7 +31,7 @@ app.get('/api/notes', (req, res) => {
 
 // POST request to add a review ----------------------------------------------------------------------
 app.post('/api/notes', (req, res) => {
-    // Log that a POST request was received
+
     console.info(`${req.method} request received to add a note`);
 
     // Destructuring assignment for the items in req.body
@@ -47,7 +47,7 @@ app.post('/api/notes', (req, res) => {
 
         };
 
-        // Obtain existing reviews
+        // Obtain existing notes
         fs.readFile('./db/db.json', 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
@@ -58,7 +58,7 @@ app.post('/api/notes', (req, res) => {
                 // Add a new review
                 parsedNotes.push(newNote);
 
-                // Write updated reviews back to the file
+                // Write updated notes back to the file
                 fs.writeFile(
                     './db/db.json',
                     JSON.stringify(parsedNotes, null, 4),
@@ -94,25 +94,25 @@ app.delete('/api/notes/:id', (req, res) => {
             console.error(err);
         } else {
             const parsedNotes = JSON.parse(data);
-            
+
             for (let i = 0; i < parsedNotes.length; i++) {
                 const currentNote = parsedNotes[i];
                 if (currentNote.id === id) {
                     res.json('note has been deleted');
                     parsedNotes.splice(i, 1);
-                    fs.writeFile ('./db/db.json',
-                    JSON.stringify(parsedNotes, null, 4),
-                    (writeErr) =>
-                        writeErr
-                            ? console.error(writeErr)
-                            : console.info('Successfully deleted note!'))
+                    fs.writeFile('./db/db.json',
+                        JSON.stringify(parsedNotes, null, 4),
+                        (writeErr) =>
+                            writeErr
+                                ? console.error(writeErr)
+                                : console.info('Successfully deleted note!'))
                 }
             }
         }
 
-       
+
     })
- 
+
 });
 
 app.listen(PORT, () =>
